@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   TextEditingController searchController = new TextEditingController();
   List itens = [];
 
-  bool isLoading = false;
+  bool isLoading = false, reverseList = false;
 
   @override
   void initState() {
@@ -45,6 +45,10 @@ class _HomePageState extends State<HomePage> {
         term.replaceAll("/r/", "");
       }
 
+      if (term.contains(" ")) {
+        term.replaceAll(" ", "");
+      }
+
       var response = await RedditService().getContent(term);
 
       itens.clear();
@@ -52,8 +56,19 @@ class _HomePageState extends State<HomePage> {
       print(response['data']);
 
       isLoading = false;
-      for (int i = 0; i <= filters.length; i++) {
-        if (filters.elementAt(i).label != term && i == filters.length) {
+
+      bool addOnFilterList = true;
+      if (itens.length >= 1) {
+        filters.forEach((element) {
+          element.isSelected = false;
+          if (term == element.label) {
+            addOnFilterList = false;
+            element.isSelected = true;
+          }
+        });
+
+        if (addOnFilterList) {
+          reverseList = true;
           filters.add(
             Filter(
               color: AppColors.correct,
@@ -62,8 +77,14 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         }
+      } else {
+        ToastUtil.showToast(
+          "Nenhum resultado encontrado! verifique se digitou corretamente",
+          Toast.LENGTH_SHORT,
+        );
       }
     } catch (e) {
+      print('Erro: $e');
       ToastUtil.showToast(
         "Termo não encontrado! verifique se digitou corretamente",
         Toast.LENGTH_SHORT,
@@ -130,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                               height: 32,
                               width: Get.width * .6,
                               child: ListView.builder(
-                                reverse: false,
+                                reverse: reverseList,
                                 scrollDirection: Axis.horizontal,
                                 itemCount: filters.length,
                                 cacheExtent: 400,
@@ -142,8 +163,9 @@ class _HomePageState extends State<HomePage> {
                                           element.isSelected = false;
 
                                           if (element ==
-                                              filters.elementAt(index))
+                                              filters.elementAt(index)) {
                                             element.isSelected = true;
+                                          }
                                           setState(() {});
                                         });
 

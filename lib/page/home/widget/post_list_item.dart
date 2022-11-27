@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:reddit/page/home/widget/comment_list_item.dart';
 import 'package:reddit/service/reddit_service.dart';
 
 import 'package:reddit/shared/widgets/bottom_sheet_widget.dart';
+import 'package:reddit/util/toast_util.dart';
 
 import '../../../core/core.dart';
 
@@ -21,6 +23,7 @@ class PostListItemWidget extends StatelessWidget {
     // dateConverted = dateUtc;
 
     List itens = [];
+    bool commentsListIsNotEmpty = true;
 
     void showComments() async {
       var response = await RedditService()
@@ -29,60 +32,76 @@ class PostListItemWidget extends StatelessWidget {
       temp.addAll(response);
 
       print('Comentarios: ${temp.length}');
-
-      temp.forEach((e) {
-        if (e != temp.first) {
-          itens.add(e);
-          print('> Adicionado: ${e['data']['children'][0]['data']['author']}');
+      if (temp.length >= 1) {
+        try {
+          temp.forEach((e) {
+            if (e != temp.first) {
+              itens.add(e);
+              print(
+                  '> Adicionado: ${e['data']['children'][0]['data']['author']}');
+            }
+          });
+        } catch (e) {
+          print("> Erro ao recuperar Comentários: $e");
+          commentsListIsNotEmpty = false;
         }
-      });
+      } else {
+        commentsListIsNotEmpty = false;
+      }
 
-      showModalBottomSheet(
-          context: context,
-          builder: (context) => SingleChildScrollView(
-                child: Container(
-                  height: Get.height * .9,
-                  color: Color(0xFF757575),
+      if (commentsListIsNotEmpty) {
+        showModalBottomSheet(
+            context: context,
+            builder: (context) => SingleChildScrollView(
                   child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
+                    height: Get.height * .9,
+                    color: Color(0xFF757575),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
+                        color: Colors.transparent,
                       ),
-                      color: Colors.transparent,
-                    ),
-                    padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: BottomSheetWidget(
-                      subreddit: item['data']['subreddit_name_prefixed'],
-                      title: item['data']['title'],
-                      currentBody: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "Respostas",
-                                style: AppTextStyles.h7_bold,
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: Get.height * .4,
-                            child: ListView.builder(
-                              itemCount: itens.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return CommentListItemWidget(
-                                  item: itens.elementAt(index),
-                                );
-                              },
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: BottomSheetWidget(
+                        subreddit: item['data']['subreddit_name_prefixed'],
+                        title: item['data']['title'],
+                        currentBody: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "Respostas",
+                                  style: AppTextStyles.h7_bold,
+                                )
+                              ],
                             ),
-                          ),
-                        ],
+                            SizedBox(
+                              height: Get.height * .4,
+                              child: ListView.builder(
+                                itemCount: itens.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return CommentListItemWidget(
+                                    item: itens.elementAt(index),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ));
+                ));
+      } else {
+        ToastUtil.showToast(
+          "Nenhum comentário para esse post",
+          Toast.LENGTH_SHORT,
+        );
+      }
     }
 
     return InkWell(

@@ -18,6 +18,7 @@ dependencies:
   lottie: ^2.0.0
   mask_text_input_formatter: ^2.4.0
   fluttertoast: ^8.1.1
+  pagination_view: ^2.0.0
   # random_avatar: ^0.0.7
   # cached_network_image: ^3.2.3
 

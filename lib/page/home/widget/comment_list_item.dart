@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../core/core.dart';
 
@@ -10,7 +13,7 @@ class CommentListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // replies.addAll(item['data']['children']);
+    replies.addAll(item['data']['children']);
     print('Replies:  ${replies.length}');
     // var dateUtc = DateTime.parse(item['data']['created_utc'].toString());
 // var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(dateUtc, true);
@@ -31,56 +34,80 @@ class CommentListItemWidget extends StatelessWidget {
           color: AppColors.white,
           borderRadius: BorderRadius.circular(4),
         ),
-        child: Column(children: [
-          Row(
-            children: [
-              Text(
-                item['data']['children'][0]['data']['author'],
-                style: AppTextStyles.h7_bold,
-              )
-            ],
+        child: SizedBox(
+          height: 250,
+          child: ListView.builder(
+            itemCount: replies.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Column(children: [
+                  Row(
+                    children: [
+                      Container(
+                        height: 32,
+                        width: 32,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(500),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                                'https://www.redditstatic.com/avatars/defaults/v2/avatar_default_${Random().nextInt(7)}.png'),
+                            //whatever image you can put here
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        replies.elementAt(index)['data']['author'],
+                        style: AppTextStyles.h7_bold,
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Text(
+                          replies.elementAt(index)['data']['body'],
+                          style: AppTextStyles.p_regular,
+                        )),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.arrow_upward,
+                        size: 20,
+                        color: AppColors.grey_0,
+                      ),
+                      Text(
+                        ' ${replies.elementAt(index)['data']['ups']} ',
+                        style: AppTextStyles.h7_bold,
+                      ),
+                      Icon(
+                        Icons.arrow_downward,
+                        size: 20,
+                        color: AppColors.grey_0,
+                      ),
+                    ],
+                  ),
+                  Container(
+                    width: double.maxFinite,
+                    height: 1,
+                    decoration: BoxDecoration(
+                      color: AppColors.grey_01,
+                    ),
+                  ),
+                ]),
+              );
+            },
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Row(
-              children: [
-                Expanded(
-                    child: Text(
-                  item['data']['children'][0]['data']['body'],
-                  style: AppTextStyles.p_regular,
-                )),
-              ],
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Icon(
-                Icons.arrow_upward,
-                size: 20,
-                color: AppColors.grey_0,
-              ),
-              Text(
-                ' ${item['data']['children'][0]['data']['ups']} ',
-                style: AppTextStyles.h7_bold,
-              ),
-              Icon(
-                Icons.arrow_downward,
-                size: 20,
-                color: AppColors.grey_0,
-              ),
-            ],
-          ),
-        ]),
+        ),
       ),
     );
   }
 }
-
-
-/**
- 
- 
-
-
- */

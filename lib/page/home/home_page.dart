@@ -47,8 +47,8 @@ class _HomePageState extends State<HomePage> {
         term.replaceAll("/r/", "");
       }
       // Caso o texto digitado tenha espaço
-      if (term.contains("\\s")) {
-        term.replaceAll("\\s", "");
+      if (term.contains(" ")) {
+        term.replaceAll(" ", "");
       }
 
       // Aguardando requisição

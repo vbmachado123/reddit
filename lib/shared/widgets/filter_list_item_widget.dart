@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../../core/core.dart';
 import '../../model/filter.dart';
 
+/**
+ * @description: O FilterListItem (barra de pesquisa) simplificando 
+ * a implementação e aumentando a escalabilidade da aplicação
+ */
 class FilterListItemWidget extends StatefulWidget {
   final Filter filter;
   final VoidCallback onTap;

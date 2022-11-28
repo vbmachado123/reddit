@@ -1,4 +1,3 @@
-// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -40,16 +39,19 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
+      // Caso o usuário insira os prefixos para pesquisa,
+      //remover antes de enviar a req
       if (term.contains("r/")) {
         term.replaceAll("r/", "");
       } else if (term.contains("/r/")) {
         term.replaceAll("/r/", "");
       }
-
-      if (term.contains(" ")) {
-        term.replaceAll(" ", "");
+      // Caso o texto digitado tenha espaço
+      if (term.contains("\\s")) {
+        term.replaceAll("\\s", "");
       }
 
+      // Aguardando requisição
       var response = await RedditService().getContent(term);
 
       itens.clear();
@@ -61,6 +63,8 @@ class _HomePageState extends State<HomePage> {
 
       isLoading = false;
 
+      // Verificando se o termo pesquisado já
+      //consta na lista de filtros, caso não, ele adiciona
       bool addOnFilterList = true;
       if (itens.length >= 1) {
         filters.forEach((element) {
@@ -194,6 +198,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+// Recomendações de comunidades, conforme o usuario for pesquisando,
+//novos itens serão adicionados aqui
   List<Filter> filters = [
     Filter(
       color: AppColors.primary1,

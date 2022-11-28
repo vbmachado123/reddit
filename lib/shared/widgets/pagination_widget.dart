@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:reddit/core/core.dart';
+import 'package:reddit/util/toast_util.dart';
 
 import '../../page/home/widget/post_list_item.dart';
 
+/**
+ * @description: PaginationWidget atende aos requisitos da paginação, recebendo uma lista com X itens como parametro
+ * e limitando a visualização de cada pagina como 10
+ */
 class PaginationWidget extends StatefulWidget {
   final List<dynamic> itens;
   const PaginationWidget({super.key, required this.itens});
@@ -16,7 +22,7 @@ class PaginationWidget extends StatefulWidget {
 class _PaginationWidgetState extends State<PaginationWidget> {
   List<dynamic> itensPerPage = [];
   List<dynamic> backupList = [];
-  bool _isFirstPage = true, _isLoading = false;
+  bool _isFirstPage = true, _isLoading = false, _isLastPage = false;
   int firstItemIndex = 0, lastItemIndex = 10, qntPerPage = 10;
 
   @override
@@ -29,14 +35,8 @@ class _PaginationWidgetState extends State<PaginationWidget> {
 
   loadListData() async {
     print('> Carregando Pagina');
-    // if (_isFirstPage) {
-    //   itensPerPage.addAll(backupList.take(10));
-    //   _isFirstPage = !_isFirstPage;
-    // }
 
     itensPerPage.addAll(backupList.take(10));
-
-    lastItemIndex = itensPerPage.length;
 
     setState(() {});
   }
@@ -46,7 +46,11 @@ class _PaginationWidgetState extends State<PaginationWidget> {
       _isLoading = !_isLoading;
     });
 
-    //...
+    backupList.clear();
+    backupList.addAll(widget.itens);
+
+    firstItemIndex = 0;
+    lastItemIndex = 10;
 
     await Future.delayed(const Duration(milliseconds: 500))
         .then((value) => loadListData());
@@ -57,32 +61,43 @@ class _PaginationWidgetState extends State<PaginationWidget> {
   }
 
   onNextPage() async {
-    setState(() {
-      _isLoading = !_isLoading;
-    });
+    if (!_isLastPage) {
+      setState(() {
+        _isLoading = !_isLoading;
+      });
 
-    itensPerPage.forEach((element) {
-      backupList.remove(element);
-      print('> Removendo Item');
-    });
+      itensPerPage.forEach((element) {
+        backupList.remove(element);
+        print('> Removendo Item');
+      });
 
-    firstItemIndex = lastItemIndex;
+      firstItemIndex = lastItemIndex;
 
-    if (backupList.length <= 10) {
-      qntPerPage = backupList.length;
-      lastItemIndex = qntPerPage;
+      if (backupList.length <= 10) {
+        qntPerPage = backupList.length;
+        // lastItemIndex += qntPerPage;
+        _isLastPage = true;
+      } else {
+        // lastItemIndex += lastItemIndex + 10;
+        qntPerPage = 10;
+      }
+
+      print('Item total: $lastItemIndex');
+
+      lastItemIndex = lastItemIndex + qntPerPage;
+
+      itensPerPage.clear();
+
+      await Future.delayed(const Duration(milliseconds: 500))
+          .then((value) => loadListData());
+
+      setState(() {
+        _isLoading = !_isLoading;
+      });
     } else {
-      qntPerPage = 10;
+      ToastUtil.showToast(
+          "Não há mais páginas para visualizar", Toast.LENGTH_SHORT);
     }
-
-    itensPerPage.clear();
-
-    await Future.delayed(const Duration(milliseconds: 500))
-        .then((value) => loadListData());
-
-    setState(() {
-      _isLoading = !_isLoading;
-    });
   }
 
   @override
@@ -126,7 +141,7 @@ class _PaginationWidgetState extends State<PaginationWidget> {
                     style: AppTextStyles.p_bold,
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: InkWell(
                       onTap: () => onPreviousPage(),
                       child: Icon(

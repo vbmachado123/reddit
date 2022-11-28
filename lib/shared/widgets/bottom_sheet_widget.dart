@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:reddit/core/app_colors.dart';
 import 'package:reddit/core/app_text_styles.dart';
 
+/**
+ * @description: BottomSheet padrão da aplicação
+ */
 class BottomSheetWidget extends StatelessWidget {
   final Widget currentBody;
   final String title;
@@ -17,7 +20,7 @@ class BottomSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: Get.height,
+      // height: Get.height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(4),
@@ -72,7 +75,10 @@ class BottomSheetWidget extends StatelessWidget {
                   SizedBox(
                     height: 16,
                   ),
-                  currentBody
+                  currentBody,
+                  // SizedBox(
+                  //   height: 48,
+                  // ),
                 ],
               ) //Conteúdo do CARD
               ),

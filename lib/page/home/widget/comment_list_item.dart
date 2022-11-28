@@ -15,11 +15,12 @@ class CommentListItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     replies.addAll(item['data']['children']);
     print('Replies:  ${replies.length}');
-    // var dateUtc = DateTime.parse(item['data']['created_utc'].toString());
-// var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(dateUtc, true);
-    // String
-    // dateConverted = dateUtc;
 
+/**
+ * A lista de comentários e respostas para o comentário é teoricamente infinita;
+ Esse widget precisa ser dinamico o suficiente para receber essa 
+ estrutura de dados e exibir da maneira correta
+ */
     return InkWell(
       onTap: () => {},
       child: Container(
@@ -53,7 +54,6 @@ class CommentListItemWidget extends StatelessWidget {
                           image: DecorationImage(
                             image: NetworkImage(
                                 'https://www.redditstatic.com/avatars/defaults/v2/avatar_default_${Random().nextInt(7)}.png'),
-                            //whatever image you can put here
                             fit: BoxFit.cover,
                           ),
                         ),

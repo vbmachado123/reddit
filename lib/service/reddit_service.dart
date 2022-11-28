@@ -1,5 +1,9 @@
 import 'package:dio/dio.dart';
 
+/**
+ * @description: Responsável por realizar as requisições na api, passando 
+ * as informações inseridas pelo usuário como parametro
+ */
 class RedditService {
   getContent(String subreddit) async {
     try {

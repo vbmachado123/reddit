@@ -17,20 +17,17 @@ class PostListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // var dateUtc = DateTime.parse(item['data']['created_utc'].toString());
-// var dateTime = DateFormat("yyyy-MM-dd HH:mm:ss").parse(dateUtc, true);
-    // String
-    // dateConverted = dateUtc;
-
     List itens = [];
     bool commentsListIsNotEmpty = true;
 
+    // Listando Comentarios
     void showComments() async {
       var response = await RedditService()
           .getComments(item['data']['subreddit'], item['data']['id']);
       List temp = [];
       temp.addAll(response);
 
+      // Verificando se nao esta vazio (o post possui respostas/comentarios)
       print('Comentarios: ${temp.length}');
       if (temp.length >= 1) {
         try {
@@ -51,12 +48,14 @@ class PostListItemWidget extends StatelessWidget {
 
       if (commentsListIsNotEmpty) {
         showModalBottomSheet(
+            // Exibindo o bottomsheet, com o layout pré-definido
             context: context,
             builder: (context) => SingleChildScrollView(
                   child: Container(
-                    height: Get.height * .9,
+                    height: Get.height * .8,
                     color: Color(0xFF757575),
                     child: Container(
+                      height: Get.height * .9,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(16),
@@ -122,6 +121,8 @@ class PostListItemWidget extends StatelessWidget {
           children: [
             Row(
               children: [
+                // Imagem de perfil para o usuario, verifica se o valor de 'thumbnail'
+                // está vazio ou nao, caso positivo, exibe um avatar padrao do reddit
                 Stack(
                   children: [
                     Container(
@@ -133,7 +134,6 @@ class PostListItemWidget extends StatelessWidget {
                         image: DecorationImage(
                           image: NetworkImage(
                               'https://www.redditstatic.com/avatars/defaults/v2/avatar_default_${Random().nextInt(7)}.png'),
-                          //whatever image you can put here
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -146,7 +146,6 @@ class PostListItemWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(500),
                         image: DecorationImage(
                           image: NetworkImage('${item['data']['thumbnail']}'),
-                          //whatever image you can put here
                           fit: BoxFit.cover,
                         ),
                       ),

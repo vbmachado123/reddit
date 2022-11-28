@@ -6,6 +6,7 @@ import 'package:reddit/page/home/widget/post_list_item.dart';
 import 'package:reddit/service/reddit_service.dart';
 import 'package:reddit/shared/widgets/filter_list_item_widget.dart';
 import 'package:reddit/shared/widgets/input_widget.dart';
+import 'package:reddit/shared/widgets/pagination_widget.dart';
 import 'package:reddit/util/toast_util.dart';
 
 import '../../core/core.dart';
@@ -53,6 +54,9 @@ class _HomePageState extends State<HomePage> {
 
       itens.clear();
       itens.addAll(response['data']['children']);
+      print(
+          '> Tamanho da lista:  Total: ${itens.length} | Paginas: ${itens.length % 10}');
+
       print(response['data']);
 
       isLoading = false;
@@ -105,7 +109,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.only(
           left: 16,
           right: 16,
-          bottom: 64,
+          bottom: 48,
           top: 32,
         ),
         child: SingleChildScrollView(
@@ -178,17 +182,9 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: Get.height * .8,
-                          child: ListView.builder(
-                            itemCount: itens.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return PostListItemWidget(
-                                item: itens.elementAt(index),
-                              );
-                            },
-                          ),
-                        ),
+                        PaginationWidget(
+                          itens: itens,
+                        )
                       ],
                     ),
             ],
